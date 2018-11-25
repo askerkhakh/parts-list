@@ -1,4 +1,4 @@
-package com.example;
+package com.example.meta;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,9 +7,16 @@ import static java.util.Objects.requireNonNull;
 
 public class TableMetaDataImpl implements TableMetaData {
     private Map<String, FieldMetaData> fieldsMap;
+    private final String tableName;
 
-    TableMetaDataImpl() {
+    TableMetaDataImpl(String tableName) {
+        this.tableName = tableName;
         fieldsMap = new HashMap<>();
+    }
+
+    @Override
+    public String getName() {
+        return tableName;
     }
 
     @Override

@@ -1,11 +1,11 @@
-package com.example;
+package com.example.meta;
 
 public class FieldMetaDataImpl implements FieldMetaData {
 
     private final String name;
-    private final int type;
+    private final FieldType type;
 
-    FieldMetaDataImpl(String name, int type) {
+    FieldMetaDataImpl(String name, FieldType type) {
         this.name = name;
         this.type = type;
     }
@@ -16,7 +16,7 @@ public class FieldMetaDataImpl implements FieldMetaData {
     }
 
     @Override
-    public int getType() {
+    public FieldType getType() {
         return type;
     }
 }

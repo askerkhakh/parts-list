@@ -1,8 +1,8 @@
-package com.example;
+package com.example.meta;
 
 public interface FieldMetaData {
 
     String getName();
 
-    int getType();
+    FieldType getType();
 }
