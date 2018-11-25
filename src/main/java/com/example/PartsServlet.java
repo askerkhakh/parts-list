@@ -52,7 +52,8 @@ public class PartsServlet extends HttpServlet {
             writer.write("</td>");
 
             writer.write("<td>");
-            switch (metaData.getColumnType(i)) {
+            int columnType = metaData.getColumnType(i);
+            switch (columnType) {
                 case Types.INTEGER:
                     writer.format("<input type=\"number\" name=\"%s\"/>", filterId);
                     break;
@@ -63,6 +64,8 @@ public class PartsServlet extends HttpServlet {
                     writer.format("<label for=\"%s\">after</label>\n<input type=\"date\" name=\"%s\"/>", filterId, filterId);
                     writer.format("<label for=\"%s\">before</label>\n<input type=\"date\" name=\"%s\"/>", columnName + "_before", columnName + "_before");
                     break;
+                default:
+                    throw new AssertionError(String.format("Фильтрация по типу \"%d\" не поддержана", columnType));
             }
             writer.write("</td>");
 
