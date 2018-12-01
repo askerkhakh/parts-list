@@ -19,4 +19,9 @@ public class FieldMetaDataImpl implements FieldMetaData {
     public FieldType getType() {
         return type;
     }
+
+    @Override
+    public String getLabel() {
+        return getName();
+    }
 }

@@ -3,6 +3,7 @@ package com.example;
 import com.example.filter.Filter;
 import com.example.filter.FilterFactory;
 import com.example.filter.FilterItem;
+import com.example.meta.FieldMetaData;
 import com.example.meta.TableMetaData;
 import com.example.meta.TableMetaDataFactory;
 
@@ -48,7 +49,7 @@ public class PartsServlet extends HttpServlet {
                     setupParameters(preparedStatement, parameterList);
                     try (ResultSet resultSet = preparedStatement.executeQuery()) {
                         writeFilter(filter, writer);
-                        writeTable(resultSet, writer);
+                        writeTable(tableMetaData, resultSet, writer);
                     }
                 }
             } catch (SQLException e) {
@@ -99,28 +100,43 @@ public class PartsServlet extends HttpServlet {
         writer.write("<form>\n");
     }
 
-    private void writeTable(ResultSet resultSet, PrintWriter writer) throws SQLException {
+    private void writeTable(TableMetaData tableMetaData, ResultSet resultSet, PrintWriter writer) throws SQLException {
         writer.write("<table>");
-        ResultSetMetaData metaData = resultSet.getMetaData();
-        writeTableHeader(metaData, writer);
-        writeTableData(metaData, resultSet, writer);
+        writeTableHeader(tableMetaData, writer);
+        writeTableData(tableMetaData, resultSet, writer);
         writer.write("</table>");
     }
 
-    private void writeTableData(ResultSetMetaData metaData, ResultSet resultSet, PrintWriter writer) throws SQLException {
+    private void writeTableData(TableMetaData tableMetaData, ResultSet resultSet, PrintWriter writer) throws SQLException {
         while (resultSet.next()) {
             writer.write("<tr>\n");
-            for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                writer.write("<td>" + resultSet.getString(i) + "</td>");
+            int i = 1;
+            for (FieldMetaData fieldMetaData : tableMetaData.getFields()) {
+                writer.write("<td>" + getDisplayValue(fieldMetaData, resultSet, i++) + "</td>");
             }
             writer.write("</tr>\n");
         }
     }
 
-    private void writeTableHeader(ResultSetMetaData metaData, PrintWriter writer) throws SQLException {
+    private String getDisplayValue(FieldMetaData fieldMetaData, ResultSet resultSet, int columnIndex) throws SQLException {
+        if (resultSet.getObject(columnIndex) == null)
+            return "";
+        switch (fieldMetaData.getType()) {
+            case DATE:
+                return resultSet.getDate(columnIndex).toString();
+            case STRING:
+                return resultSet.getString(columnIndex);
+            case INTEGER:
+                return Integer.valueOf(resultSet.getInt(columnIndex)).toString();
+            default:
+                throw new AssertionError();
+        }
+    }
+
+    private void writeTableHeader(TableMetaData tableMetaData, PrintWriter writer) {
         writer.write("<tr>");
-        for (int i = 1; i <= metaData.getColumnCount(); i++) {
-            writer.write("<th>" + metaData.getColumnLabel(i) + "</th>");
+        for (FieldMetaData fieldMetaData : tableMetaData.getFields()) {
+            writer.write("<th>" + fieldMetaData.getLabel() + "</th>");
         }
         writer.write("</tr>");
     }

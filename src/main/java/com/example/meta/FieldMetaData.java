@@ -5,4 +5,6 @@ public interface FieldMetaData {
     String getName();
 
     FieldType getType();
+
+    String getLabel();
 }
