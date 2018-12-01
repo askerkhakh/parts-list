@@ -1,6 +1,7 @@
 package com.example.meta;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
@@ -11,7 +12,7 @@ public class TableMetaDataImpl implements TableMetaData {
 
     TableMetaDataImpl(String tableName) {
         this.tableName = tableName;
-        fieldsMap = new HashMap<>();
+        fieldsMap = new LinkedHashMap<>();
     }
 
     @Override
