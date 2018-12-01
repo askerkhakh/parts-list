@@ -15,4 +15,6 @@ public interface FilterItem {
     boolean isEmpty();
 
     String buildCondition(List<Object> parameterList);
+
+    String getQueryString();
 }

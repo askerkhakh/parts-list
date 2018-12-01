@@ -1,5 +1,6 @@
 package com.example.filter;
 
+import com.example.Utils;
 import com.example.meta.FieldMetaData;
 
 public abstract class FilterItemImpl implements FilterItem {
@@ -23,10 +24,15 @@ public abstract class FilterItemImpl implements FilterItem {
     @Override
     public String getInputTag() {
         return String.format("<input type=\"%s\" id=\"%s\" name=\"%s\" value=\"%s\"/>",
-                getInputTagType(), getFilterId(), getFilterName(), getFilterStringValue());
+                getInputTagType(), getFilterId(), getName(), getStringValue());
     }
 
-    protected String getFilterStringValue() {
+    @Override
+    public String getQueryString() {
+        return String.format("%s=%s", getName(), getStringValue());
+    }
+
+    protected String getStringValue() {
         return "";
     }
 
@@ -34,17 +40,16 @@ public abstract class FilterItemImpl implements FilterItem {
         return "";
     }
 
-    protected String getFilterName() {
+    protected String getName() {
         return field.getName();
     }
 
     protected String getFilterId() {
-        return getFilterName();
+        return getName();
     }
 
     protected String getQuotedFieldName() {
-        // TODO: оборачивать в кавычки только при необходимости
-        return "\"" + field.getName() + "\"";
+        return Utils.quoteString(field.getName());
     }
 
 }

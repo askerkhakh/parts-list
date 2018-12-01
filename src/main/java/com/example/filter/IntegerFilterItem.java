@@ -14,7 +14,7 @@ public class IntegerFilterItem extends SingleValueFilterItem<Integer> {
 
     static FilterItem ofReqParameterMap(FieldMetaData field, Map<String, String[]> reqParameterMap) {
         IntegerFilterItem integerFilterItem = new IntegerFilterItem(field);
-        String[] value = reqParameterMap.get(integerFilterItem.getFilterName());
+        String[] value = reqParameterMap.get(integerFilterItem.getName());
         if (value != null && !value[0].isEmpty())
             integerFilterItem.setValue(Integer.parseInt(value[0]));
         else

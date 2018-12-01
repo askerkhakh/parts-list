@@ -23,4 +23,14 @@ public class FilterImpl implements Filter {
     void add(FilterItem filterItem) {
         items.add(filterItem);
     }
+
+    @Override
+    public String toQueryString() {
+        List<String> queryItems = new ArrayList<>();
+        for (FilterItem filterItem : this) {
+            if (!filterItem.isEmpty())
+                queryItems.add(filterItem.getQueryString());
+        }
+        return String.join("&", queryItems);
+    }
 }

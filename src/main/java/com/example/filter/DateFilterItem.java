@@ -70,6 +70,17 @@ public class DateFilterItem extends FilterItemImpl {
     }
 
     @Override
+    public String getQueryString() {
+        String afterQueryString = "";
+        if (afterValue != null)
+            afterQueryString = String.format("%s=%s", getAfterInputName(), afterValue.toString());
+        String beforeQueryString = "";
+        if (beforeValue != null)
+            beforeQueryString = String.format("%s=%s", getBeforeInputName(), beforeValue.toString());
+        return String.join("&", afterQueryString, beforeQueryString);
+    }
+
+    @Override
     public boolean isEmpty() {
         return afterValue == null || beforeValue == null;
     }

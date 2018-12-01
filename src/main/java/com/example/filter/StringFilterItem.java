@@ -13,7 +13,7 @@ public class StringFilterItem extends SingleValueFilterItem<String> {
 
     static FilterItem ofReqParameterMap(FieldMetaData field, Map<String, String[]> reqParameterMap) {
         StringFilterItem stringFilterItem = new StringFilterItem(field);
-        String[] value = reqParameterMap.get(stringFilterItem.getFilterName());
+        String[] value = reqParameterMap.get(stringFilterItem.getName());
         if (value != null && !value[0].isEmpty())
             stringFilterItem.setValue(value[0]);
         else

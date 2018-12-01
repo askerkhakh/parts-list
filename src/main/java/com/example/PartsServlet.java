@@ -6,6 +6,8 @@ import com.example.filter.FilterItem;
 import com.example.meta.FieldMetaData;
 import com.example.meta.TableMetaData;
 import com.example.meta.TableMetaDataFactory;
+import com.example.sorting.SortInfo;
+import com.example.sorting.SortInfoFactory;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletException;
@@ -19,6 +21,7 @@ import java.io.PrintWriter;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet("/")
 public class PartsServlet extends HttpServlet {
@@ -36,20 +39,26 @@ public class PartsServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setCharacterEncoding("utf-8");
         try(PrintWriter writer = resp.getWriter()) {
-            writer.println("<html>\n<head>\n<title>parts</title>\n</head>\n<body>");
+            writer.println("<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"utf-8\"/><title>parts</title>\n</head>\n<body>");
             try (Connection connection = dataSource.getConnection()) {
-                Filter filter = FilterFactory.newInstance(tableMetaData, req.getParameterMap());
+                Map<String, String[]> reqParameterMap = req.getParameterMap();
+                Filter filter = FilterFactory.newInstance(tableMetaData, reqParameterMap);
+                SortInfo sortInfo = SortInfoFactory.newInstance(reqParameterMap);
                 List<Object> parameterList = new ArrayList<>();
                 try(PreparedStatement preparedStatement =
                             connection.prepareStatement(
-                                    String.format("select * from %s %s", tableMetaData.getName(), buildWhereBlock(filter, parameterList))
+                                    String.format("select * from %s %s %s",
+                                            tableMetaData.getName(),
+                                            buildWhereBlock(filter, parameterList),
+                                            buildOrderBy(sortInfo))
                             )
                 ) {
                     setupParameters(preparedStatement, parameterList);
                     try (ResultSet resultSet = preparedStatement.executeQuery()) {
                         writeFilter(filter, writer);
-                        writeTable(tableMetaData, resultSet, writer);
+                        writeTable(tableMetaData, filter, sortInfo, resultSet, writer);
                     }
                 }
             } catch (SQLException e) {
@@ -57,6 +66,13 @@ public class PartsServlet extends HttpServlet {
             }
             writer.write("</body>\n</html>");
         }
+    }
+
+    private String buildOrderBy(SortInfo sortInfo) {
+        String orderByString = sortInfo.buildOrderBy();
+        if (orderByString.isEmpty())
+            return "";
+        return "order by " + orderByString;
     }
 
     private void setupParameters(PreparedStatement preparedStatement, List<Object> parameterList) throws SQLException {
@@ -81,7 +97,7 @@ public class PartsServlet extends HttpServlet {
     private void writeFilter(Filter filter, PrintWriter writer) {
         writer.format("<form action=\"%s\" method=\"GET\">\n", this.getClass().getSimpleName());
         writer.write("<table>\n");
-        writer.write("<th>filter</th>\n");
+        writer.write("<tr><th>filter</th></tr>\n");
         for (FilterItem filterItem : filter) {
             writer.write("<tr>\n");
 
@@ -97,12 +113,12 @@ public class PartsServlet extends HttpServlet {
         }
         writer.write("</table>\n");
         writer.write("<input type=\"submit\" value=\"filter\"/>");
-        writer.write("<form>\n");
+        writer.write("</form>\n");
     }
 
-    private void writeTable(TableMetaData tableMetaData, ResultSet resultSet, PrintWriter writer) throws SQLException {
+    private void writeTable(TableMetaData tableMetaData, Filter filter, SortInfo sortInfo, ResultSet resultSet, PrintWriter writer) throws SQLException {
         writer.write("<table>");
-        writeTableHeader(tableMetaData, writer);
+        writeTableHeader(tableMetaData, filter, sortInfo, writer);
         writeTableData(tableMetaData, resultSet, writer);
         writer.write("</table>");
     }
@@ -133,12 +149,21 @@ public class PartsServlet extends HttpServlet {
         }
     }
 
-    private void writeTableHeader(TableMetaData tableMetaData, PrintWriter writer) {
+
+    private void writeTableHeader(TableMetaData tableMetaData, Filter filter, SortInfo sortInfo, PrintWriter writer) {
         writer.write("<tr>");
         for (FieldMetaData fieldMetaData : tableMetaData.getFields()) {
-            writer.write("<th>" + fieldMetaData.getLabel() + "</th>");
+            writer.write("<th>");
+            writer.write(String.format("<a href=\"%s\">%s</a>", buildRef(fieldMetaData, filter, sortInfo) , fieldMetaData.getLabel()));
+            writer.write("</th>");
         }
         writer.write("</tr>");
+    }
+
+    private String buildRef(FieldMetaData fieldMetaData, Filter filter, SortInfo sortInfo) {
+        String ref = "?" + String.join("&", filter.toQueryString(), sortInfo.getQueryStringForField(fieldMetaData));
+        ref = ref.replaceAll("&", "&amp;");
+        return ref;
     }
 
 }

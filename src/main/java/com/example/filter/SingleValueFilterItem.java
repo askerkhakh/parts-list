@@ -18,7 +18,7 @@ public abstract class SingleValueFilterItem<T> extends FilterItemImpl {
     }
 
     @Override
-    protected String getFilterStringValue() {
+    public String getStringValue() {
         if (value == null)
             return "";
         else
