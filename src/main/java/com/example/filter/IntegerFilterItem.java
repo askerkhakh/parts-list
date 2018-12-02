@@ -17,8 +17,6 @@ public class IntegerFilterItem extends SingleValueFilterItem<Integer> {
         String[] value = reqParameterMap.get(integerFilterItem.getName());
         if (value != null && !value[0].isEmpty())
             integerFilterItem.setValue(Integer.parseInt(value[0]));
-        else
-            integerFilterItem.setValue(null);
         return integerFilterItem;
     }
 

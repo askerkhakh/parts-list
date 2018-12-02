@@ -36,8 +36,6 @@ public class DateFilterItem extends FilterItemImpl {
             catch (DateTimeParseException e) {
                 // если не удалось разобрать строку, то молча продолжаем работу
             }
-        else
-            dateFilterItem.afterValue = null;
         String[] beforeValue = reqParameterMap.get(dateFilterItem.getBeforeInputName());
         if (beforeValue != null && !beforeValue[0].isEmpty())
             try {
@@ -46,8 +44,6 @@ public class DateFilterItem extends FilterItemImpl {
             catch (DateTimeParseException e) {
                 // если не удалось разобрать строку, то молча продолжаем работу
             }
-        else
-            dateFilterItem.beforeValue = null;
         return dateFilterItem;
     }
 

@@ -16,8 +16,6 @@ public class StringFilterItem extends SingleValueFilterItem<String> {
         String[] value = reqParameterMap.get(stringFilterItem.getName());
         if (value != null && !value[0].isEmpty())
             stringFilterItem.setValue(value[0]);
-        else
-            stringFilterItem.setValue(null);
         return stringFilterItem;
     }
 
