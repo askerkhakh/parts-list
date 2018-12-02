@@ -4,6 +4,8 @@ import com.example.Utils;
 import com.example.meta.FieldMetaData;
 import org.jetbrains.annotations.Nullable;
 
+import static com.example.Utils.encodeQueryParam;
+
 class SortInfoImpl implements SortInfo {
 
     static final String SORT_FIELD_QUERY_PARAM = "sortField";
@@ -20,7 +22,7 @@ class SortInfoImpl implements SortInfo {
         if (sortFieldName != null && sortDirection != null)
             if (field.equals(sortFieldName))
                 direction = sortDirection.toggle();
-        return String.format("%s=%s&%s=%s", SORT_FIELD_QUERY_PARAM, field, SORT_ORDER_QUERY_PARAM, direction);
+        return String.format("%s=%s&%s=%s", SORT_FIELD_QUERY_PARAM, encodeQueryParam(field), SORT_ORDER_QUERY_PARAM, direction);
     }
 
     @Override

@@ -3,6 +3,8 @@ package com.example.filter;
 import com.example.Utils;
 import com.example.meta.FieldMetaData;
 
+import static com.example.Utils.encodeQueryParam;
+
 public abstract class FilterItemImpl implements FilterItem {
 
     private FieldMetaData field;
@@ -29,7 +31,7 @@ public abstract class FilterItemImpl implements FilterItem {
 
     @Override
     public String getQueryString() {
-        return String.format("%s=%s", getName(), getStringValue());
+        return String.format("%s=%s", encodeQueryParam(getName()), encodeQueryParam(getStringValue()));
     }
 
     protected String getStringValue() {

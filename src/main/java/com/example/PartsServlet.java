@@ -18,7 +18,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -139,7 +143,7 @@ public class PartsServlet extends HttpServlet {
             return "";
         switch (fieldMetaData.getType()) {
             case DATE:
-                return resultSet.getDate(columnIndex).toString();
+                return resultSet.getDate(columnIndex).toLocalDate().format(DateTimeFormatter.ofPattern("MMM dd, yyyy"));
             case STRING:
                 return resultSet.getString(columnIndex);
             case INTEGER:
